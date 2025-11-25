@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import '../views/profile_screen.dart';
+import '../views/edit_profile_screen.dart';
 import '../controllers/profile_controller.dart';
 import 'app_routes.dart';
 
@@ -15,6 +16,13 @@ class AppPages {
     GetPage(
       name: AppRoutes.profile,
       page: () => const ProfileScreen(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut(() => ProfileController());
+      }),
+    ),
+    GetPage(
+      name: AppRoutes.editProfile,
+      page: () => const EditProfileScreen(),
       binding: BindingsBuilder(() {
         Get.lazyPut(() => ProfileController());
       }),

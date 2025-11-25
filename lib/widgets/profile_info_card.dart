@@ -22,45 +22,25 @@ class ProfileInfoCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.all(16.w),
-        decoration: BoxDecoration(
-          color: const Color(AppConstants.cardBackground),
-          borderRadius: BorderRadius.circular(12.r),
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(4.r)),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            if (leading != null) ...[
-              leading!,
-              SizedBox(width: 12.w),
-            ],
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: const Color(AppConstants.textPrimary),
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  if (subtitle != null) ...[
-                    SizedBox(height: 4.h),
-                    Text(
-                      subtitle!,
-                      style: TextStyle(
-                        color: const Color(AppConstants.textSecondary),
-                        fontSize: 12.sp,
-                      ),
-                    ),
-                  ],
-                ],
+            if (leading != null) ...[leading!, SizedBox(width: 12.w)],
+            Text(
+              title,
+              style: TextStyle(
+                color: const Color(AppConstants.textPrimary),
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w600,
               ),
             ),
-            Icon(
-              Icons.chevron_right,
-              color: const Color(AppConstants.textPrimary),
-              size: 20.sp,
+            Expanded(
+              child: Icon(
+                Icons.chevron_right,
+                color: const Color(AppConstants.textPrimary),
+                size: 30.sp,
+              ),
             ),
           ],
         ),
@@ -68,4 +48,3 @@ class ProfileInfoCard extends StatelessWidget {
     );
   }
 }
-

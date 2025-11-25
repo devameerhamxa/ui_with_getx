@@ -17,52 +17,64 @@ class CustomProgressBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final clampedProgress = progress.clamp(0.0, 1.0);
-    
+
     return Row(
       children: [
         Expanded(
           child: Container(
-            height: 8.h,
+            height: 20.h,
             decoration: BoxDecoration(
-              color: const Color(AppConstants.progressBarEmpty),
-              borderRadius: BorderRadius.circular(4.r),
+              borderRadius: BorderRadius.circular(12.r),
             ),
-            child: Stack(
-              clipBehavior: Clip.hardEdge,
-              children: [
-                // Filled portion
-                FractionallySizedBox(
-                  widthFactor: clampedProgress,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color(AppConstants.progressBarFill),
-                      borderRadius: BorderRadius.circular(4.r),
-                    ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12.r),
+              child: Stack(
+                children: [
+                  // Background (dark grey)
+                  Container(
+                    width: double.infinity,
+                    height: double.infinity,
+                    color: const Color(0xFF4A4A4A),
                   ),
-                ),
-                // Chevron pattern for empty portion only
-                Positioned.fill(
-                  child: ClipRect(
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      widthFactor: 1.0 - clampedProgress,
-                      child: CustomPaint(
-                        painter: ChevronPatternPainter(),
+
+                  if (clampedProgress < 1.0)
+                    Positioned.fill(
+                      child: ClipRect(
+                        child: Align(
+                          alignment: Alignment.centerRight,
+                          widthFactor: 1.0 - clampedProgress,
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              return CustomPaint(
+                                size: Size(
+                                  constraints.maxWidth,
+                                  constraints.maxHeight,
+                                ),
+                                painter: GreaterThanPatternPainter(),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+
+                  FractionallySizedBox(
+                    widthFactor: clampedProgress,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(12.r),
+                        bottomLeft: Radius.circular(12.r),
+                        topRight: Radius.circular(12.r),
+                        bottomRight: Radius.circular(12.r),
+                      ),
+                      child: Container(
+                        color: const Color(AppConstants.progressBarFill),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ),
-        SizedBox(width: 8.w),
-        Text(
-          '$current/$max',
-          style: TextStyle(
-            color: const Color(AppConstants.textPrimary),
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w500,
           ),
         ),
       ],
@@ -70,30 +82,40 @@ class CustomProgressBar extends StatelessWidget {
   }
 }
 
-class ChevronPatternPainter extends CustomPainter {
+class GreaterThanPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = const Color(AppConstants.progressBarEmpty)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
+    if (size.width <= 0 || size.height <= 0) return;
 
-    const double chevronWidth = 6.0;
-    const double chevronSpacing = 2.0;
+    // Smaller font size to ensure full visibility within bar height
+    final textStyle = TextStyle(
+      color: const Color(0xFF2A2A2A),
+      fontSize: 50,
+      fontWeight: FontWeight.w200,
+    );
 
-    for (double x = 0; x < size.width; x += chevronWidth + chevronSpacing) {
-      final path = Path()
-        ..moveTo(x, size.height / 2)
-        ..lineTo(x + chevronWidth / 2, 0)
-        ..lineTo(x + chevronWidth, size.height / 2)
-        ..lineTo(x + chevronWidth / 2, size.height)
-        ..close();
+    final textPainter = TextPainter(
+      text: TextSpan(text: '>', style: textStyle),
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout();
 
-      canvas.drawPath(path, paint);
+    final charWidth = textPainter.width;
+    final charHeight = textPainter.height;
+
+    final spacing = 2.0;
+    final totalWidth = charWidth + spacing;
+    final count = ((size.width) / totalWidth).floor();
+
+    for (int i = 0; i < count; i++) {
+      final x = i * totalWidth + spacing;
+      // Center vertically with padding to ensure full visibility
+      final y = (size.height - charHeight) / 2;
+
+      textPainter.paint(canvas, Offset(x, y));
     }
   }
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-

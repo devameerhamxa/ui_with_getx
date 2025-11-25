@@ -8,6 +8,8 @@ class AppConstants {
   static const int accentRed = 0xFFF44336;
   static const int progressBarFill = 0xFFFFFFFF;
   static const int progressBarEmpty = 0xFF424242;
+  static const int progressBarBlue = 0xFF00BFFF;
+  static const int progressBarBlueGlow = 0xFF00D4FF;
 
   // Spacing
   static const double paddingSmall = 8.0;
