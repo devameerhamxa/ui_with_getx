@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -101,70 +102,81 @@ class EditProfileScreen extends GetView<ProfileController> {
                         child: Stack(
                           clipBehavior: Clip.none,
                           children: [
-                            Container(
-                              width: 120.w,
-                              height: 120.w,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: const Color(AppConstants.primaryDark),
-                                border: Border.all(
-                                  color: const Color(0xff131417),
-                                  width: 6.w,
-                                ),
-                              ),
-                              child: ClipOval(
-                                child: Obx(() {
-                                  final imagePath =
-                                      controller.profileImagePath.value;
-                                  if (imagePath.startsWith('/')) {
-                                    // File path from image picker
-                                    return Image.file(
-                                      File(imagePath),
-                                      fit: BoxFit.cover,
-                                    );
-                                  } else {
-                                    // Asset path
-                                    return Image.asset(
-                                      imagePath,
-                                      fit: BoxFit.cover,
-                                    );
-                                  }
-                                }),
-                              ),
-                            ),
-                            // Upload icon
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: GestureDetector(
-                                onTap: () async {
+                            GestureDetector(
+                              onTap: () async {
+                                try {
                                   final ImagePicker picker = ImagePicker();
                                   final XFile? image = await picker.pickImage(
                                     source: ImageSource.gallery,
                                   );
                                   if (image != null) {
+                                    log(
+                                      'Updating profile image: ${image.path}',
+                                    );
                                     // Update profile image with the selected image
                                     controller.updateProfileImage(image.path);
+                                    log('Profile image updated');
                                   }
-                                },
-                                child: Container(
-                                  width: 36.w,
-                                  height: 36.w,
-                                  decoration: BoxDecoration(
+                                } catch (e, stackTrace) {
+                                  // Handle error if image picker fails
+                                  log('Error picking image: $e');
+                                  log('Stack trace: $stackTrace');
+                                }
+                              },
+                              child: Container(
+                                width: 120.w,
+                                height: 120.w,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: const Color(AppConstants.primaryDark),
+                                  border: Border.all(
                                     color: const Color(0xff131417),
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: const Color(
-                                        AppConstants.primaryDark,
-                                      ),
-                                      width: 2.w,
+                                    width: 6.w,
+                                  ),
+                                ),
+                                child: ClipOval(
+                                  child: Obx(() {
+                                    final imagePath =
+                                        controller.profileImagePath.value;
+                                    if (imagePath.startsWith('/')) {
+                                      // File path from image picker
+                                      return Image.file(
+                                        File(imagePath),
+                                        fit: BoxFit.cover,
+                                      );
+                                    } else {
+                                      // Asset path
+                                      return Image.asset(
+                                        imagePath,
+                                        fit: BoxFit.cover,
+                                      );
+                                    }
+                                  }),
+                                ),
+                              ),
+                            ),
+                            // Upload icon (visual indicator only)
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                width: 40.w,
+                                height: 40.w,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xff131417),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: const Color(
+                                      AppConstants.primaryDark,
                                     ),
+                                    width: 2.w,
                                   ),
-                                  child: Icon(
-                                    Icons.arrow_upward,
-                                    color: Colors.white,
-                                    size: 18.sp,
-                                  ),
+                                ),
+                                child: Icon(
+                                  Icons.arrow_upward,
+                                  color: Colors.white,
+                                  size: 22.sp,
                                 ),
                               ),
                             ),
